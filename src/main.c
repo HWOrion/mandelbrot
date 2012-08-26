@@ -84,7 +84,7 @@ int main(int argc, char* argv[])
     SDL_Surface *screen;
     SDL_Event event;
 
-    int keypress = 0;
+    int running = 1;
 
     if (SDL_Init(SDL_INIT_VIDEO) < 0 ) return 1;
 
@@ -99,24 +99,40 @@ int main(int argc, char* argv[])
 
     draw_screen(brot, screen);
 
-    while(!keypress) {
-
+    while(running) {
         while(SDL_PollEvent(&event)) {
 
             switch (event.type) {
 
             case SDL_QUIT:
-                keypress = 1;
+                running = 0;
                 break;
+
             case SDL_KEYDOWN:
-                keypress = 1;
+                switch (event.key.keysym.sym) {
+                case SDLK_ESCAPE:
+                    // Escape key
+                    running = 0;
+                    break;
+                case SDLK_p:
+                    // Write out png
+                    render_png(brot);
+                    break;
+                default:
+                    break;
+                }
                 break;
+
+            case SDL_MOUSEBUTTONDOWN:           //mouse button down
+                printf("Mouse down x:%d, y:%d\n", event.button.x, event.button.y );
+                break; 
+            case SDL_MOUSEBUTTONUP:           //mouse button up
+                printf("Mouse up x:%d, y:%d\n", event.button.x, event.button.y );
+                break; 
 
             }
         }
     }
-
-    render_png(brot);
 
     SDL_Quit();
 
