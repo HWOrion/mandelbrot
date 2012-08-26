@@ -52,6 +52,33 @@ void draw_screen(Mandelbrot brot, SDL_Surface* screen)
 
 }
 
+void render_png(Mandelbrot brot)
+{
+    int y, x;
+    int width = brot->pixelWidth;
+    int height = brot->pixelHeight;
+
+    Uint8 colour;
+
+    unsigned char* image = malloc(width * height * 4);
+
+    for (y = 0; y < brot->pixelHeight; y++) {
+        for (x = 0; x < brot->pixelWidth; x++) {
+            colour = brot->pixels[x][y];
+            image[4 * width * y + 4 * x + 0] = colour;
+            image[4 * width * y + 4 * x + 1] = colour;
+            image[4 * width * y + 4 * x + 2] = colour;
+            image[4 * width * y + 4 * x + 3] = 255;
+        }
+    }
+
+    unsigned error = lodepng_encode32_file("brotout.png", image, brot->pixelWidth, brot->pixelHeight);
+
+    /*if there's an error, display it*/
+    if(error) printf("error %u: %s\n", error, lodepng_error_text(error));
+}
+
+
 int main(int argc, char* argv[])
 {
     SDL_Surface *screen;
@@ -89,29 +116,7 @@ int main(int argc, char* argv[])
         }
     }
 
-
-    int y, x;
-    int width = brot->pixelWidth;
-    int height = brot->pixelHeight;
-
-    Uint8 colour;
-
-    unsigned char* image = malloc(width * height * 4);
-
-    for (y = 0; y < brot->pixelHeight; y++) {
-        for (x = 0; x < brot->pixelWidth; x++) {
-            colour = brot->pixels[x][y];
-            image[4 * width * y + 4 * x + 0] = colour;
-            image[4 * width * y + 4 * x + 1] = colour;
-            image[4 * width * y + 4 * x + 2] = colour;
-            image[4 * width * y + 4 * x + 3] = 255;
-        }
-    }
-
-    unsigned error = lodepng_encode32_file("brotout.png", image, brot->pixelWidth, brot->pixelHeight);
-
-    /*if there's an error, display it*/
-    if(error) printf("error %u: %s\n", error, lodepng_error_text(error));
+    render_png(brot);
 
     SDL_Quit();
 
