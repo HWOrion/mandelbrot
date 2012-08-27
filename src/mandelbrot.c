@@ -60,9 +60,12 @@ int brot_pixel_coords(Mandelbrot brot, int xPos, int yPos)
 {
     double xVal, yVal;
 
-    xVal = (((brot->x2 - brot->x1)/brot->pixelWidth) * xPos) + brot->x1;
+    xVal = (double)brot->x1 + ((brot->x2 - brot->x1) * ((double)xPos / brot->pixelWidth));
 
-    yVal = (((brot->y2 - brot->y1)/brot->pixelHeight) * yPos) + brot->y1;
+    // Subtracting from y1 because we have two coordinate systems
+    // Mandelbrot is plotted on usual x/y axes with y increasing upwards
+    // Pixels have origin at top left corner and y increases downwards
+    yVal = (double)brot->y1 - ((brot->y1 - brot->y2) * ((double)yPos / brot->pixelHeight));
 
     // Need to work out exactly how the limit should be calculated
     // Not using it until I have

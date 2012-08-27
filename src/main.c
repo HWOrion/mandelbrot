@@ -49,7 +49,6 @@ void draw_screen(Mandelbrot brot, SDL_Surface* screen)
     }
 
     SDL_Flip(screen);
-
 }
 
 /* Given pixel coordinates, this will render a selected section of
@@ -60,13 +59,13 @@ Mandelbrot draw_mandelbrot_section(Mandelbrot brot, double x1, double y1, double
     double x1Brot, y1Brot, x2Brot, y2Brot;
 
     double plotX = (brot->x2 - brot->x1);
-    double plotY = (brot->y2 - brot->y1);
+    double plotY = (brot->y1 - brot->y2);
 
-    x1Brot = (plotX * x1) + brot->x1;
-    y1Brot = (plotY * y1) + brot->y1;
+    x1Brot = brot->x1 + (plotX * x1);
+    y1Brot = brot->y1 - (plotY * y1);
 
-    x2Brot = (plotX * x2) + brot->x1;
-    y2Brot = (plotY * y2) + brot->y1;
+    x2Brot = brot->x1 + (plotX * x2);
+    y2Brot = brot->y1 - (plotY * y2);
 
     Mandelbrot newBrot = brot_create(WIDTH, HEIGHT, 255, x1Brot, y1Brot, x2Brot, y2Brot);
 
@@ -163,12 +162,12 @@ int main(int argc, char* argv[])
             case SDL_MOUSEBUTTONDOWN:           //mouse button down
                 x1 = (double)event.button.x/WIDTH;
                 // Subtract from height so that negative y is downwards
-                y1 = (double)(HEIGHT - event.button.y)/HEIGHT;
+                y1 = (double)event.button.y/HEIGHT;
                 break; 
             case SDL_MOUSEBUTTONUP:           //mouse button up
                 x2 = (double)event.button.x/WIDTH;
                 // Subtract from height so that negative y is downwards
-                y2 = (double)(HEIGHT - event.button.y)/HEIGHT;
+                y2 = (double)event.button.y/HEIGHT;
 
                 if (x1 > x2) {
                     temp = x2;
@@ -183,8 +182,6 @@ int main(int argc, char* argv[])
                 }
 
                 x2 = x1 + ((y2 - y1) * ratio);
-
-                printf("%f, %f, %f, %f, %f\n", x1, y1, x2, y2, ((x2-x1)/(y2-y1)));
 
                 brot = draw_mandelbrot_section(brot, x1, y1, x2, y2);
                 draw_screen(brot, screen);
