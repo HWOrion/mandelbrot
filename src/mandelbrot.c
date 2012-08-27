@@ -47,18 +47,11 @@ Mandelbrot brot_calculate(Mandelbrot brot)
 {
     int xPos, yPos;
 
-    int max = 0;
-
     for (xPos = 0; xPos < brot->pixelWidth; xPos++) {
         for (yPos = 0; yPos < brot->pixelHeight; yPos++) {
             brot->pixels[xPos][yPos] = brot_pixel_coords(brot, xPos, yPos);
-            if (brot->pixels[xPos][yPos] > (brot->repeats-1)) {
-                max++;
-            }
         }
     }
-
-    printf("%i   %f%%\n", max, (max/(xPos*yPos))*100.0);
 
     return brot;
 }
