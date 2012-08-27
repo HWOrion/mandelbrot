@@ -131,16 +131,16 @@ void render_png(Mandelbrot brot)
     int width = brot->pixelWidth;
     int height = brot->pixelHeight;
 
-    Uint8 colour;
+    Uint32 colour;
 
     unsigned char* image = malloc(width * height * 4);
 
     for (y = 0; y < brot->pixelHeight; y++) {
         for (x = 0; x < brot->pixelWidth; x++) {
-            colour = brot->pixels[x][y];
-            image[4 * width * y + 4 * x + 0] = colour;
-            image[4 * width * y + 4 * x + 1] = colour;
-            image[4 * width * y + 4 * x + 2] = colour;
+            colour = set_colour(brot->pixels[x][y]);
+            image[4 * width * y + 4 * x + 0] = (colour >> 16) & 255;
+            image[4 * width * y + 4 * x + 1] = (colour >> 8)  & 255;
+            image[4 * width * y + 4 * x + 2] = (colour)       & 255;
             image[4 * width * y + 4 * x + 3] = 255;
         }
     }
