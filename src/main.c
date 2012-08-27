@@ -31,9 +31,6 @@ void draw_screen(Mandelbrot brot, SDL_Surface* screen)
 {
     int xPos, yPos, colour;
 
-    printf("drawn: %f,%f   to   %f,%f\n", brot->x1, brot->y1, brot->x2, brot->y2);
-
-
     if(SDL_MUSTLOCK(screen)) {
         if(SDL_LockSurface(screen) < 0) {
             return;
@@ -58,41 +55,26 @@ void draw_screen(Mandelbrot brot, SDL_Surface* screen)
 /* Given pixel coordinates, this will render a selected section of
  * the screen after zooming in
  */
-void draw_mandelbrot_section(Mandelbrot brot, int x1, int y1, int x2, int y2)
+Mandelbrot draw_mandelbrot_section(Mandelbrot brot, double x1, double y1, double x2, double y2)
 {
-    int temp;
-
-    if (x1 > x2) {
-        temp = x2;
-        x2 = x1;
-        x1 = temp;
-    }
-
-    if (y1 < y2) {
-        temp = y2;
-        y2 = y1;
-        y1 = temp;
-    }
-
-    printf("pixel: %i,%i   to   %i,%i\n", x1, y1, x2, y2);
-
     double x1Brot, y1Brot, x2Brot, y2Brot;
 
     double plotX = (brot->x2 - brot->x1);
     double plotY = (brot->y2 - brot->y1);
 
-    x1Brot = (plotX * ((double)x1 / brot->pixelWidth)) + brot->x1;
-    y1Brot = brot->y2 - (plotY * ((double)y1 / brot->pixelHeight));
+    x1Brot = (plotX * x1) + brot->x1;
+    y1Brot = (plotY * y1) + brot->y1;
 
-    x2Brot = (plotX * ((double)x2 / brot->pixelWidth)) + brot->x1;
-    y2Brot = brot->y2 - (plotY * ((double)y2 / brot->pixelHeight));
+    x2Brot = (plotX * x2) + brot->x1;
+    y2Brot = (plotY * y2) + brot->y1;
 
-    printf("calced: %f,%f   to   %f,%f\n", x1Brot, y1Brot, x2Brot, y2Brot);
+    Mandelbrot newBrot = brot_create(WIDTH, HEIGHT, 255, x1Brot, y1Brot, x2Brot, y2Brot);
 
-    brot_recreate(brot, x1Brot, y1Brot, x2Brot, y2Brot);
+    brot_calculate(newBrot);
 
-    brot_calculate(brot);
+    brot_cleanup(brot);
 
+    return newBrot;
 }
 
 void render_png(Mandelbrot brot)
@@ -136,7 +118,9 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    int x1, x2, y1, y2;
+    double x1, x2, y1, y2;
+    double temp;
+    double ratio = (double)WIDTH/HEIGHT;
 
     Mandelbrot brot = brot_create(WIDTH, HEIGHT, 255, -2.5, -1.0, 1.0, 1.0);
 
@@ -177,13 +161,32 @@ int main(int argc, char* argv[])
                 break;
 
             case SDL_MOUSEBUTTONDOWN:           //mouse button down
-                x1 = event.button.x;
-                y1 = event.button.y;
+                x1 = (double)event.button.x/WIDTH;
+                // Subtract from height so that negative y is downwards
+                y1 = (double)(HEIGHT - event.button.y)/HEIGHT;
                 break; 
             case SDL_MOUSEBUTTONUP:           //mouse button up
-                x2 = event.button.x;
-                y2 = event.button.y;
-                draw_mandelbrot_section(brot, x1, y1, x2, y2);
+                x2 = (double)event.button.x/WIDTH;
+                // Subtract from height so that negative y is downwards
+                y2 = (double)(HEIGHT - event.button.y)/HEIGHT;
+
+                if (x1 > x2) {
+                    temp = x2;
+                    x2 = x1;
+                    x1 = temp;
+                }
+
+                if (y1 > y2) {
+                    temp = y2;
+                    y2 = y1;
+                    y1 = temp;
+                }
+
+                x2 = x1 + ((y2 - y1) * ratio);
+
+                printf("%f, %f, %f, %f, %f\n", x1, y1, x2, y2, ((x2-x1)/(y2-y1)));
+
+                brot = draw_mandelbrot_section(brot, x1, y1, x2, y2);
                 draw_screen(brot, screen);
                 break; 
 
