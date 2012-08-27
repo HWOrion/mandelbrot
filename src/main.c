@@ -76,16 +76,16 @@ void draw_mandelbrot_section(Mandelbrot brot, int x1, int y1, int x2, int y2)
 
     printf("pixel: %i,%i   to   %i,%i\n", x1, y1, x2, y2);
 
-    float x1Brot, y1Brot, x2Brot, y2Brot;
+    double x1Brot, y1Brot, x2Brot, y2Brot;
 
-    float plotX = (brot->x2 - brot->x1);
-    float plotY = (brot->y2 - brot->y1);
+    double plotX = (brot->x2 - brot->x1);
+    double plotY = (brot->y2 - brot->y1);
 
-    x1Brot = (plotX * ((float)x1 / brot->pixelWidth)) + brot->x1;
-    y1Brot = brot->y2 - (plotY * ((float)y1 / brot->pixelHeight));
+    x1Brot = (plotX * ((double)x1 / brot->pixelWidth)) + brot->x1;
+    y1Brot = brot->y2 - (plotY * ((double)y1 / brot->pixelHeight));
 
-    x2Brot = (plotX * ((float)x2 / brot->pixelWidth)) + brot->x1;
-    y2Brot = brot->y2 - (plotY * ((float)y2 / brot->pixelHeight));
+    x2Brot = (plotX * ((double)x2 / brot->pixelWidth)) + brot->x1;
+    y2Brot = brot->y2 - (plotY * ((double)y2 / brot->pixelHeight));
 
     printf("calced: %f,%f   to   %f,%f\n", x1Brot, y1Brot, x2Brot, y2Brot);
 

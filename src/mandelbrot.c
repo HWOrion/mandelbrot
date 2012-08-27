@@ -5,7 +5,7 @@
 
 #include "mandelbrot.h"
 
-Mandelbrot brot_create(int pixelWidth, int pixelHeight, int repeats, float x1, float y1, float x2, float y2)
+Mandelbrot brot_create(int pixelWidth, int pixelHeight, int repeats, double x1, double y1, double x2, double y2)
 {
     Mandelbrot brot = (Mandelbrot) malloc(sizeof(Mandelbrot_Data));
 
@@ -32,7 +32,7 @@ Mandelbrot brot_create(int pixelWidth, int pixelHeight, int repeats, float x1, f
     return brot;
 }
 
-Mandelbrot brot_recreate(Mandelbrot brot, float x1, float y1, float x2, float y2)
+Mandelbrot brot_recreate(Mandelbrot brot, double x1, double y1, double x2, double y2)
 {
     brot->x1 = x1;
     brot->y1 = y1;
@@ -65,7 +65,7 @@ Mandelbrot brot_calculate(Mandelbrot brot)
 
 int brot_pixel_coords(Mandelbrot brot, int xPos, int yPos)
 {
-    float xVal, yVal;
+    double xVal, yVal;
 
     xVal = (((brot->x2 - brot->x1)/brot->pixelWidth) * xPos) + brot->x1;
 
@@ -79,12 +79,12 @@ int brot_pixel_coords(Mandelbrot brot, int xPos, int yPos)
 
 }
 
-int brot_calc_escape(float xPos, float yPos, float limit, int depth)
+int brot_calc_escape(double xPos, double yPos, double limit, int depth)
 {
-    float x = 0;
-    float y = 0;
+    double x = 0;
+    double y = 0;
 
-    float temp = 0;
+    double temp = 0;
 
     int iteration = 0;
 
