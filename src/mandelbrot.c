@@ -43,6 +43,15 @@ Mandelbrot brot_recreate(Mandelbrot brot, double x1, double y1, double x2, doubl
     return brot;
 }
 
+Mandelbrot brot_fix_ratio(Mandelbrot brot, int height, int width)
+{
+    double h2w_ratio = (double)height/width;
+
+    brot->y2 = ((brot->x2 - brot->x1) * h2w_ratio) + brot->y1;
+
+    return brot;
+}
+
 Mandelbrot brot_calculate(Mandelbrot brot)
 {
     int xPos, yPos;

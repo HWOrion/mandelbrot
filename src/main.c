@@ -118,6 +118,8 @@ Mandelbrot draw_mandelbrot_section(Mandelbrot brot, double x1, double y1, double
 
     Mandelbrot newBrot = brot_create(WIDTH, HEIGHT, 255, x1Brot, y1Brot, x2Brot, y2Brot);
 
+    brot_fix_ratio(brot, HEIGHT, WIDTH);
+
     brot_calculate(newBrot);
 
     brot_cleanup(brot);
@@ -168,7 +170,6 @@ int main(int argc, char* argv[])
 
     double x1, x2, y1, y2;
     double temp;
-    double ratio = (double)WIDTH/HEIGHT;
 
     Mandelbrot brot = brot_create(WIDTH, HEIGHT, 255, -2.5, -1.0, 1.0, 1.0);
 
@@ -198,7 +199,6 @@ int main(int argc, char* argv[])
                 case SDLK_r:
                     // Reset image
                     // This needs to be Non height/width specific
-                    printf("Resetting view\n");
                     brot = brot_create(WIDTH, HEIGHT, 255, -2.5, -1.0, 1.0, 1.0);
                     brot_calculate(brot);
                     draw_screen(brot, screen);
@@ -229,8 +229,6 @@ int main(int argc, char* argv[])
                     y2 = y1;
                     y1 = temp;
                 }
-
-                x2 = x1 + ((y2 - y1) * ratio);
 
                 brot = draw_mandelbrot_section(brot, x1, y1, x2, y2);
                 draw_screen(brot, screen);
