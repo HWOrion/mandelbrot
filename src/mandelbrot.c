@@ -32,6 +32,17 @@ Mandelbrot brot_create(int pixelWidth, int pixelHeight, int repeats, float x1, f
     return brot;
 }
 
+Mandelbrot brot_recreate(Mandelbrot brot, float x1, float y1, float x2, float y2)
+{
+    brot->x1 = x1;
+    brot->y1 = y1;
+
+    brot->x2 = x2;
+    brot->y2 = y2;
+
+    return brot;
+}
+
 Mandelbrot brot_calculate(Mandelbrot brot)
 {
     int xPos, yPos;
