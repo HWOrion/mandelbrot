@@ -9,9 +9,55 @@
 #define BPP    4
 #define DEPTH  32
 
-void setpixel(SDL_Surface *screen, int x, int y, Uint8 r, Uint8 g, Uint8 b)
+Uint32 set_colour(int value) {
+
+    Uint32 colour;
+
+    if (value < 1) {
+        colour = (255 << 16) | (255 << 8) | 255;
+    } else if (value > 200) {
+        colour = 0;
+    } else {
+        switch(value % 8) {
+            case 0:
+                colour = (0 << 16) | (0 << 8) | 100;
+                break;
+            case 1:
+                colour = (0 << 16) | (0 << 8) | 150;
+                break;
+            case 2:
+                colour = (0 << 16) | (0 << 8) | 200;
+                break;
+            case 3:
+                colour = (50 << 16) | (50 << 8) | 250;
+                break;
+            case 4:
+                colour = (100 << 16) | (100 << 8) | 250;
+                break;
+            case 5:
+                colour = (150 << 16) | (150 << 8) | 250;
+                break;
+            case 6:
+                colour = (200 << 16) | (200 << 8) | 250;
+                break;
+            case 7:
+                colour = (250 << 16) | (250 << 8) | 250;
+                break;
+        }
+    }
+
+    return colour;
+}
+
+
+void setpixel(SDL_Surface *screen, int x, int y, Uint32 colour)
 {
     int xPos, yPos;
+    Uint8 r, g, b;
+
+    r = (colour >> 16) & 255;
+    g = (colour >> 8)  & 255;
+    b = (colour )      & 255;
 
     xPos = x;
     // Moving this into the setpixel method to simplify
@@ -19,17 +65,18 @@ void setpixel(SDL_Surface *screen, int x, int y, Uint8 r, Uint8 g, Uint8 b)
     yPos = (y * screen->pitch) / BPP;
 
     Uint32 *pixmem32;
-    Uint32 colour;
+    Uint32 pColour;
 
-    colour = SDL_MapRGB(screen->format, r, g, b );
+    pColour = SDL_MapRGB(screen->format, r, g, b );
 
     pixmem32 = (Uint32*) screen->pixels + yPos + xPos;
-    *pixmem32 = colour;
+    *pixmem32 = pColour;
 }
 
 void draw_screen(Mandelbrot brot, SDL_Surface* screen)
 {
-    int xPos, yPos, colour;
+    int xPos, yPos;
+    Uint32 colour;
 
     if(SDL_MUSTLOCK(screen)) {
         if(SDL_LockSurface(screen) < 0) {
@@ -39,8 +86,10 @@ void draw_screen(Mandelbrot brot, SDL_Surface* screen)
 
     for (yPos = 0; yPos < screen->h; yPos++) {
         for (xPos = 0; xPos < screen->w; xPos++) {
-            colour = brot->pixels[xPos][yPos];
-            setpixel(screen, xPos, yPos, colour, colour, colour);
+
+            colour = set_colour(brot->pixels[xPos][yPos]);
+
+            setpixel(screen, xPos, yPos, colour);
         }
     }
 
