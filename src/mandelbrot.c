@@ -64,31 +64,29 @@ Mandelbrot brot_calculate(Mandelbrot brot)
 
 int brot_pixel_coords(Mandelbrot brot, int xPos, int yPos)
 {
-    double xVal = (double)brot->x1 + ((brot->x2 - brot->x1) * ((double)xPos / brot->pixelWidth));
+    double x = (double)brot->x1 + ((brot->x2 - brot->x1) * ((double)xPos / brot->pixelWidth));
 
     // Subtracting from y1 because we have two coordinate systems
     // Mandelbrot is plotted on usual x/y axes with y increasing upwards
     // Pixels have origin at top left corner and y increases downwards
-    double yVal = (double)brot->y1 - ((brot->y1 - brot->y2) * ((double)yPos / brot->pixelHeight));
+    double y = (double)brot->y1 - ((brot->y1 - brot->y2) * ((double)yPos / brot->pixelHeight));
 
-    // Need to work out exactly how the limit should be calculated
-    // Not using it until I have
-    //float limit = (xVal * xVal) + (yVal * yVal);
-
-    return brot_calc_escape(xVal, yVal, 0.0, brot->repeats);
+    return brot_calc_escape(x, y, brot->repeats);
 
 }
 
-int brot_calc_escape(double xPos, double yPos, double limit, int depth)
+int brot_calc_escape(double xPos, double yPos, int depth)
 {
     double x = 0;
     double y = 0;
+
+    double limit = (xPos * xPos) + (yPos * yPos);
 
     double temp = 0;
 
     int iteration = 0;
 
-    while ( ((x*x + y*y) < 4) && (iteration < depth) ) {
+    while ( ((x*x + y*y) <= limit) && (iteration < depth) ) {
 
         temp = x*x - y*y + xPos;
 
