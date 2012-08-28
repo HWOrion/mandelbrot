@@ -72,7 +72,6 @@ int brot_pixel_coords(Mandelbrot brot, int xPos, int yPos)
     double y = (double)brot->y1 - ((brot->y1 - brot->y2) * ((double)yPos / brot->pixelHeight));
 
     return brot_calc_escape(x, y, brot->repeats);
-
 }
 
 int brot_calc_escape(double xPos, double yPos, int depth)
@@ -80,13 +79,11 @@ int brot_calc_escape(double xPos, double yPos, int depth)
     double x = 0;
     double y = 0;
 
-    double limit = (xPos * xPos) + (yPos * yPos);
-
     double temp = 0;
 
     int iteration = 0;
 
-    while ( ((x*x + y*y) <= limit) && (iteration < depth) ) {
+    while ( ((x*x + y*y) < 4) && (iteration < depth) ) {
 
         temp = x*x - y*y + xPos;
 
@@ -98,7 +95,6 @@ int brot_calc_escape(double xPos, double yPos, int depth)
     }
 
     return iteration;
-
 }
 
 void brot_cleanup(Mandelbrot brot)
