@@ -197,6 +197,7 @@ int main(int argc, char* argv[])
                 case SDLK_r:
                     // Reset image
                     // This needs to be Non height/width specific
+                    brot_cleanup(brot);
                     brot = brot_create(WIDTH, HEIGHT, 255, -2.5, -1.0, 1.0, 1.0);
                     brot_calculate(brot);
                     draw_screen(brot, screen);
