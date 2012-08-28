@@ -116,15 +116,13 @@ Mandelbrot draw_mandelbrot_section(Mandelbrot brot, double x1, double y1, double
     x2Brot = brot->x1 + (plotX * x2);
     y2Brot = brot->y1 - (plotY * y2);
 
-    Mandelbrot newBrot = brot_create(WIDTH, HEIGHT, 255, x1Brot, y1Brot, x2Brot, y2Brot);
+    brot_recreate(brot, x1Brot, y1Brot, x2Brot, y2Brot);
 
     brot_fix_ratio(brot, HEIGHT, WIDTH);
 
-    brot_calculate(newBrot);
+    brot_calculate(brot);
 
-    brot_cleanup(brot);
-
-    return newBrot;
+    return brot;
 }
 
 void render_png(Mandelbrot brot)
@@ -230,7 +228,7 @@ int main(int argc, char* argv[])
                     y1 = temp;
                 }
 
-                brot = draw_mandelbrot_section(brot, x1, y1, x2, y2);
+                draw_mandelbrot_section(brot, x1, y1, x2, y2);
                 draw_screen(brot, screen);
                 break; 
 
