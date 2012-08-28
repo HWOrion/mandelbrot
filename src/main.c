@@ -75,7 +75,6 @@ void setpixel(SDL_Surface *screen, int x, int y, Uint32 colour)
 
 void draw_screen(Mandelbrot brot, SDL_Surface* screen)
 {
-    int xPos, yPos;
     Uint32 colour;
 
     if(SDL_MUSTLOCK(screen)) {
@@ -84,12 +83,12 @@ void draw_screen(Mandelbrot brot, SDL_Surface* screen)
         }
     }
 
-    for (yPos = 0; yPos < screen->h; yPos++) {
-        for (xPos = 0; xPos < screen->w; xPos++) {
+    for (int y = 0; y < screen->h; y++) {
+        for (int x = 0; x < screen->w; x++) {
 
-            colour = set_colour(brot->pixels[xPos][yPos]);
+            colour = set_colour(brot->pixels[x][y]);
 
-            setpixel(screen, xPos, yPos, colour);
+            setpixel(screen, x, y, colour);
         }
     }
 
@@ -127,16 +126,15 @@ Mandelbrot draw_mandelbrot_section(Mandelbrot brot, double x1, double y1, double
 
 void render_png(Mandelbrot brot)
 {
-    int y, x;
-    int width = brot->pixelWidth;
+    int width  = brot->pixelWidth;
     int height = brot->pixelHeight;
 
     Uint32 colour;
 
     unsigned char* image = malloc(width * height * 4);
 
-    for (y = 0; y < brot->pixelHeight; y++) {
-        for (x = 0; x < brot->pixelWidth; x++) {
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
             colour = set_colour(brot->pixels[x][y]);
             image[4 * width * y + 4 * x + 0] = (colour >> 16) & 255;
             image[4 * width * y + 4 * x + 1] = (colour >> 8)  & 255;
@@ -145,10 +143,12 @@ void render_png(Mandelbrot brot)
         }
     }
 
-    unsigned error = lodepng_encode32_file("brotout.png", image, brot->pixelWidth, brot->pixelHeight);
+    unsigned err = lodepng_encode32_file("brotout.png", image, width, height);
 
     /*if there's an error, display it*/
-    if(error) printf("error %u: %s\n", error, lodepng_error_text(error));
+    if (err) {
+        printf("error %u: %s\n", err, lodepng_error_text(err));
+    }
 }
 
 
@@ -159,7 +159,9 @@ int main(int argc, char* argv[])
 
     int running = 1;
 
-    if (SDL_Init(SDL_INIT_VIDEO) < 0 ) return 1;
+    if (SDL_Init(SDL_INIT_VIDEO) < 0 ) {
+        return 1;
+    }
 
     if (!(screen = SDL_SetVideoMode(WIDTH, HEIGHT, DEPTH, SDL_FULLSCREEN|SDL_HWSURFACE))) {
         SDL_Quit();

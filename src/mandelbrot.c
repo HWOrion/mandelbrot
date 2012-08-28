@@ -24,8 +24,7 @@ Mandelbrot brot_create(int pixelWidth, int pixelHeight, int repeats, double x1, 
 
     // Assign the memory for the 2D array
     // Actually done as an array of pointers to arrays of ints
-    int i;
-    for (i = 0; i < brot->pixelWidth; i++) {
+    for (int i = 0; i < brot->pixelWidth; i++) {
         brot->pixels[i] = (int*) malloc(sizeof(int*) * brot->pixelHeight);
     }
 
@@ -54,10 +53,8 @@ Mandelbrot brot_fix_ratio(Mandelbrot brot, int height, int width)
 
 Mandelbrot brot_calculate(Mandelbrot brot)
 {
-    int xPos, yPos;
-
-    for (xPos = 0; xPos < brot->pixelWidth; xPos++) {
-        for (yPos = 0; yPos < brot->pixelHeight; yPos++) {
+    for (int xPos = 0; xPos < brot->pixelWidth; xPos++) {
+        for (int yPos = 0; yPos < brot->pixelHeight; yPos++) {
             brot->pixels[xPos][yPos] = brot_pixel_coords(brot, xPos, yPos);
         }
     }
@@ -67,14 +64,12 @@ Mandelbrot brot_calculate(Mandelbrot brot)
 
 int brot_pixel_coords(Mandelbrot brot, int xPos, int yPos)
 {
-    double xVal, yVal;
-
-    xVal = (double)brot->x1 + ((brot->x2 - brot->x1) * ((double)xPos / brot->pixelWidth));
+    double xVal = (double)brot->x1 + ((brot->x2 - brot->x1) * ((double)xPos / brot->pixelWidth));
 
     // Subtracting from y1 because we have two coordinate systems
     // Mandelbrot is plotted on usual x/y axes with y increasing upwards
     // Pixels have origin at top left corner and y increases downwards
-    yVal = (double)brot->y1 - ((brot->y1 - brot->y2) * ((double)yPos / brot->pixelHeight));
+    double yVal = (double)brot->y1 - ((brot->y1 - brot->y2) * ((double)yPos / brot->pixelHeight));
 
     // Need to work out exactly how the limit should be calculated
     // Not using it until I have
@@ -110,9 +105,7 @@ int brot_calc_escape(double xPos, double yPos, double limit, int depth)
 
 void brot_cleanup(Mandelbrot brot)
 {
-    int i;
-
-    for (i = 0; i < brot->pixelWidth; i++) {
+    for (int i = 0; i < brot->pixelWidth; i++) {
         free(brot->pixels[i]);
     }
 
