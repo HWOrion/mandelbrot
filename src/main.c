@@ -10,8 +10,6 @@
 #define DEPTH  32
 
 
-
-
 void setpixel(SDL_Surface *screen, int x, int y, Uint32 colour)
 {
     int xPos, yPos;
@@ -45,7 +43,6 @@ void draw_screen(Mandelbrot brot, SDL_Surface* screen)
 
     for (int y = 0; y < screen->h; y++) {
         for (int x = 0; x < screen->w; x++) {
-
             setpixel(screen, x, y, brot->pixels[x][y]);
         }
     }
@@ -64,6 +61,8 @@ void render_png(Mandelbrot brot)
 
     Uint32 colour;
 
+    unsigned err
+
     unsigned char* image = malloc(width * height * 4);
 
     for (int y = 0; y < height; y++) {
@@ -76,9 +75,8 @@ void render_png(Mandelbrot brot)
         }
     }
 
-    unsigned err = lodepng_encode32_file("brotout.png", image, width, height);
+    err = lodepng_encode32_file("brotout.png", image, width, height);
 
-    /*if there's an error, display it*/
     if (err) {
         printf("error %u: %s\n", err, lodepng_error_text(err));
     }
@@ -91,6 +89,8 @@ int main(int argc, char* argv[])
     SDL_Event event;
 
     int running = 1;
+    double x1, x2, y1, y2;
+    double temp;
 
     if (SDL_Init(SDL_INIT_VIDEO) < 0 ) {
         return 1;
@@ -100,9 +100,6 @@ int main(int argc, char* argv[])
         SDL_Quit();
         return 1;
     }
-
-    double x1, x2, y1, y2;
-    double temp;
 
     Mandelbrot brot = brot_create(WIDTH, HEIGHT, 255, -2.5, -1.0, 1.0, 1.0);
 
@@ -142,14 +139,12 @@ int main(int argc, char* argv[])
                 }
                 break;
 
-            case SDL_MOUSEBUTTONDOWN:           //mouse button down
+            case SDL_MOUSEBUTTONDOWN:
                 x1 = (double)event.button.x/WIDTH;
-                // Subtract from height so that negative y is downwards
                 y1 = (double)event.button.y/HEIGHT;
                 break; 
-            case SDL_MOUSEBUTTONUP:           //mouse button up
+            case SDL_MOUSEBUTTONUP:
                 x2 = (double)event.button.x/WIDTH;
-                // Subtract from height so that negative y is downwards
                 y2 = (double)event.button.y/HEIGHT;
 
                 if (x1 > x2) {
