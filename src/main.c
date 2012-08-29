@@ -57,31 +57,6 @@ void draw_screen(Mandelbrot brot, SDL_Surface* screen)
     SDL_Flip(screen);
 }
 
-/* Given pixel coordinates, this will render a selected section of
- * the screen after zooming in
- */
-Mandelbrot draw_mandelbrot_section(Mandelbrot brot, double x1, double y1, double x2, double y2)
-{
-    double x1Brot, y1Brot, x2Brot, y2Brot;
-
-    double plotX = (brot->x2 - brot->x1);
-    double plotY = (brot->y1 - brot->y2);
-
-    x1Brot = brot->x1 + (plotX * x1);
-    y1Brot = brot->y1 - (plotY * y1);
-
-    x2Brot = brot->x1 + (plotX * x2);
-    y2Brot = brot->y1 - (plotY * y2);
-
-    brot_recreate(brot, x1Brot, y1Brot, x2Brot, y2Brot);
-
-    brot_fix_ratio(brot, HEIGHT, WIDTH);
-
-    brot_calculate(brot);
-
-    return brot;
-}
-
 void render_png(Mandelbrot brot)
 {
     int width  = brot->pixelWidth;
@@ -189,7 +164,12 @@ int main(int argc, char* argv[])
                     y1 = temp;
                 }
 
-                draw_mandelbrot_section(brot, x1, y1, x2, y2);
+                // Make sure the zoomed area always maintains the correct ratio.
+                // Because the values have already been scaled between 0 and 1
+                // we just need to make sure the area is a square
+                y2 = (x2 - x1) + y1;
+
+                brot_zoom(brot, x1, y1, x2, y2);
                 draw_screen(brot, screen);
                 break; 
 

@@ -41,11 +41,27 @@ Mandelbrot brot_recreate(Mandelbrot brot, double x1, double y1, double x2, doubl
     return brot;
 }
 
-Mandelbrot brot_fix_ratio(Mandelbrot brot, int height, int width)
+/** Takes coordinates for two points which define the upper left
+  * and lower right corners of a rectangle.
+  * These are doubles which are given as a 0 to 1 value of the distance
+  * from the top left corner of the screen.
+  */
+Mandelbrot brot_zoom(Mandelbrot brot, double x1, double y1, double x2, double y2)
 {
-    double h2w_ratio = (double)height/width;
+    double x1Brot, y1Brot, x2Brot, y2Brot;
 
-    brot->y2 = ((brot->x2 - brot->x1) * h2w_ratio) + brot->y1;
+    double plotX = (brot->x2 - brot->x1);
+    double plotY = (brot->y1 - brot->y2);
+
+    x1Brot = brot->x1 + (plotX * x1);
+    y1Brot = brot->y1 - (plotY * y1);
+
+    x2Brot = brot->x1 + (plotX * x2);
+    y2Brot = brot->y1 - (plotY * y2);
+
+    brot_recreate(brot, x1Brot, y1Brot, x2Brot, y2Brot);
+
+    brot_calculate(brot);
 
     return brot;
 }

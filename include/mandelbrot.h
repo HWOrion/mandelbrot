@@ -36,7 +36,7 @@ Mandelbrot brot_create(int pixWidth, int pixHeight, int repeats, double x1, doub
 
 Mandelbrot brot_recreate(Mandelbrot brot, double x1, double y1, double x2, double y2);
 
-Mandelbrot brot_fix_ratio(Mandelbrot brot, int height, int width);
+Mandelbrot brot_zoom(Mandelbrot brot, double x1, double y1, double x2, double y2);
 
 Mandelbrot brot_calculate(Mandelbrot brot);
 
