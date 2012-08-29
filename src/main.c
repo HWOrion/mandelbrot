@@ -12,24 +12,16 @@
 
 void setpixel(SDL_Surface *screen, int x, int y, Uint32 colour)
 {
-    int xPos, yPos;
-    Uint8 r, g, b;
-
-    r = (colour >> 16) & 255;
-    g = (colour >> 8)  & 255;
-    b = (colour )      & 255;
-
-    xPos = x;
-    // Moving this into the setpixel method to simplify
-    // Should be moved back out to optimise if necessary
-    yPos = (y * screen->pitch) / BPP;
-
     Uint32 *pixmem32;
     Uint32 pColour;
 
-    pColour = SDL_MapRGB(screen->format, r, g, b );
+    pColour = SDL_MapRGB(screen->format,
+                         (colour >> 16) & 255,
+                         (colour >> 8)  & 255,
+                         (colour )      & 255
+                         );
 
-    pixmem32 = (Uint32*) screen->pixels + yPos + xPos;
+    pixmem32 = (Uint32*) screen->pixels + y + x;
     *pixmem32 = pColour;
 }
 
@@ -41,9 +33,12 @@ void draw_screen(Mandelbrot brot, SDL_Surface* screen)
         }
     }
 
+    int yPos;
+
     for (int y = 0; y < screen->h; y++) {
+        yPos = (y * screen->pitch) / BPP;
         for (int x = 0; x < screen->w; x++) {
-            setpixel(screen, x, y, brot->pixels[x][y]);
+            setpixel(screen, x, yPos, brot->pixels[x][y]);
         }
     }
 
@@ -61,7 +56,7 @@ void render_png(Mandelbrot brot)
 
     Uint32 colour;
 
-    unsigned err
+    unsigned err;
 
     unsigned char* image = malloc(width * height * 4);
 
