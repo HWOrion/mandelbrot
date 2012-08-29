@@ -9,45 +9,7 @@
 #define BPP    4
 #define DEPTH  32
 
-Uint32 set_colour(int value) {
 
-    Uint32 colour;
-
-    if (value < 1) {
-        colour = (255 << 16) | (255 << 8) | 255;
-    } else if (value > 200) {
-        colour = 0;
-    } else {
-        switch(value % 8) {
-            case 0:
-                colour = (0 << 16) | (0 << 8) | 100;
-                break;
-            case 1:
-                colour = (0 << 16) | (0 << 8) | 150;
-                break;
-            case 2:
-                colour = (0 << 16) | (0 << 8) | 200;
-                break;
-            case 3:
-                colour = (50 << 16) | (50 << 8) | 250;
-                break;
-            case 4:
-                colour = (100 << 16) | (100 << 8) | 250;
-                break;
-            case 5:
-                colour = (150 << 16) | (150 << 8) | 250;
-                break;
-            case 6:
-                colour = (200 << 16) | (200 << 8) | 250;
-                break;
-            case 7:
-                colour = (250 << 16) | (250 << 8) | 250;
-                break;
-        }
-    }
-
-    return colour;
-}
 
 
 void setpixel(SDL_Surface *screen, int x, int y, Uint32 colour)
@@ -75,8 +37,6 @@ void setpixel(SDL_Surface *screen, int x, int y, Uint32 colour)
 
 void draw_screen(Mandelbrot brot, SDL_Surface* screen)
 {
-    Uint32 colour;
-
     if(SDL_MUSTLOCK(screen)) {
         if(SDL_LockSurface(screen) < 0) {
             return;
@@ -86,9 +46,7 @@ void draw_screen(Mandelbrot brot, SDL_Surface* screen)
     for (int y = 0; y < screen->h; y++) {
         for (int x = 0; x < screen->w; x++) {
 
-            colour = set_colour(brot->pixels[x][y]);
-
-            setpixel(screen, x, y, colour);
+            setpixel(screen, x, y, brot->pixels[x][y]);
         }
     }
 
@@ -135,7 +93,7 @@ void render_png(Mandelbrot brot)
 
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
-            colour = set_colour(brot->pixels[x][y]);
+            colour = brot->pixels[x][y];
             image[4 * width * y + 4 * x + 0] = (colour >> 16) & 255;
             image[4 * width * y + 4 * x + 1] = (colour >> 8)  & 255;
             image[4 * width * y + 4 * x + 2] = (colour)       & 255;

@@ -1,7 +1,6 @@
 #include <stdlib.h>
 #include <math.h>
-
-#include <stdio.h>
+#include <stdint.h>
 
 #include "mandelbrot.h"
 
@@ -94,7 +93,48 @@ int brot_calc_escape(double xPos, double yPos, int depth)
         iteration++;
     }
 
-    return iteration;
+    return calc_colour(iteration);
+}
+
+
+uint32_t calc_colour(int value)
+{
+    uint32_t colour;
+
+    if (value < 1) {
+        colour = 0 | (255 << 16) | (255 << 8) | 255;
+    } else if (value > 200) {
+        colour = 0;
+    } else {
+        switch(value % 8) {
+            case 0:
+                colour = (0 << 16) | (0 << 8) | 100;
+                break;
+            case 1:
+                colour = (0 << 16) | (0 << 8) | 150;
+                break;
+            case 2:
+                colour = (0 << 16) | (0 << 8) | 200;
+                break;
+            case 3:
+                colour = (50 << 16) | (50 << 8) | 250;
+                break;
+            case 4:
+                colour = (100 << 16) | (100 << 8) | 250;
+                break;
+            case 5:
+                colour = (150 << 16) | (150 << 8) | 250;
+                break;
+            case 6:
+                colour = (200 << 16) | (200 << 8) | 250;
+                break;
+            case 7:
+                colour = (250 << 16) | (250 << 8) | 250;
+                break;
+        }
+    }
+
+    return colour;
 }
 
 void brot_cleanup(Mandelbrot brot)
