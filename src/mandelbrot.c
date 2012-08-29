@@ -30,17 +30,6 @@ Mandelbrot brot_create(int pixelWidth, int pixelHeight, int repeats, double x1, 
     return brot;
 }
 
-Mandelbrot brot_recreate(Mandelbrot brot, double x1, double y1, double x2, double y2)
-{
-    brot->x1 = x1;
-    brot->y1 = y1;
-
-    brot->x2 = x2;
-    brot->y2 = y2;
-
-    return brot;
-}
-
 /** Takes coordinates for two points which define the upper left
   * and lower right corners of a rectangle.
   * These are doubles which are given as a 0 to 1 value of the distance
@@ -59,7 +48,11 @@ Mandelbrot brot_zoom(Mandelbrot brot, double x1, double y1, double x2, double y2
     x2Brot = brot->x1 + (plotX * x2);
     y2Brot = brot->y1 - (plotY * y2);
 
-    brot_recreate(brot, x1Brot, y1Brot, x2Brot, y2Brot);
+    brot->x1 = x1Brot;
+    brot->y1 = y1Brot;
+
+    brot->x2 = x2Brot;
+    brot->y2 = y2Brot;
 
     brot_calculate(brot);
 

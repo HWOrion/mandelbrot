@@ -34,8 +34,6 @@ typedef struct mandelbrot_fractal {
 // Create the Mandelbrot Data struct and populate it with data
 Mandelbrot brot_create(int pixWidth, int pixHeight, int repeats, double x1, double y1, double x2, double y2);
 
-Mandelbrot brot_recreate(Mandelbrot brot, double x1, double y1, double x2, double y2);
-
 Mandelbrot brot_zoom(Mandelbrot brot, double x1, double y1, double x2, double y2);
 
 Mandelbrot brot_calculate(Mandelbrot brot);
