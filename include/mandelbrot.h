@@ -51,8 +51,6 @@ Mandelbrot brot_calculate(Mandelbrot brot);
 
 int brot_pixel_coords(Mandelbrot brot, int xPos, int yPos);
 
-int brot_calc_escape(double xPos, double yPos, int depth);
-
 uint32_t calc_colour(int value);
 
 // Cleanup the Mandelbrot data struct and free all the assigned memory

@@ -91,18 +91,13 @@ Mandelbrot brot_calculate(Mandelbrot brot)
 
 int brot_pixel_coords(Mandelbrot brot, int xPos, int yPos)
 {
-    double x = (double)brot->x1 + ((brot->x2 - brot->x1) * ((double)xPos / brot->pixelWidth));
+    double xCoord = (double)brot->x1 + ((brot->x2 - brot->x1) * ((double)xPos / brot->pixelWidth));
 
     // Subtracting from y1 because we have two coordinate systems
     // Mandelbrot is plotted on usual x/y axes with y increasing upwards
     // Pixels have origin at top left corner and y increases downwards
-    double y = (double)brot->y1 - ((brot->y1 - brot->y2) * ((double)yPos / brot->pixelHeight));
+    double yCoord = (double)brot->y1 - ((brot->y1 - brot->y2) * ((double)yPos / brot->pixelHeight));
 
-    return brot_calc_escape(x, y, brot->repeats);
-}
-
-int brot_calc_escape(double xPos, double yPos, int depth)
-{
     double x = 0;
     double y = 0;
 
@@ -110,11 +105,11 @@ int brot_calc_escape(double xPos, double yPos, int depth)
 
     int iteration = 0;
 
-    while ( ((x*x + y*y) < 4) && (iteration < depth) ) {
+    while ( ((x*x + y*y) < 4) && (iteration < brot->repeats) ) {
 
-        temp = x*x - y*y + xPos;
+        temp = x*x - y*y + xCoord;
 
-        y = 2*x*y + yPos;
+        y = 2*x*y + yCoord;
 
         x = temp;
 
