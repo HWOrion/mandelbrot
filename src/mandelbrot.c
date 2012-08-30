@@ -14,6 +14,12 @@ Mandelbrot brot_create(int pixelWidth, int pixelHeight, int repeats, double x1, 
     brot->x2 = x2;
     brot->y2 = y2;
 
+    brot->startX1 = x1;
+    brot->startY1 = y1;
+
+    brot->startX2 = x2;
+    brot->startY2 = y2;
+
     brot->pixelWidth = pixelWidth;
     brot->pixelHeight = pixelHeight;
 
@@ -53,6 +59,19 @@ Mandelbrot brot_zoom(Mandelbrot brot, double x1, double y1, double x2, double y2
 
     brot->x2 = x2Brot;
     brot->y2 = y2Brot;
+
+    brot_calculate(brot);
+
+    return brot;
+}
+
+Mandelbrot brot_reset_zoom(Mandelbrot brot)
+{
+    brot->x1 = brot->startX1;
+    brot->y1 = brot->startY1;
+
+    brot->x2 = brot->startX2;
+    brot->y2 = brot->startY2;
 
     brot_calculate(brot);
 

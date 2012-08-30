@@ -14,6 +14,15 @@ typedef struct mandelbrot_fractal {
     double x2;
     double y2;
 
+    // These variables store the initial coordinates that
+    // the mandelbrot was created with
+    // Used for resetting the zoom
+    double startX1;
+    double startY1;
+
+    double startX2;
+    double startY2;
+
     // The size of the area in pixels
     // Allows us to calculate the complex
     // number value for each pixel
@@ -35,6 +44,8 @@ typedef struct mandelbrot_fractal {
 Mandelbrot brot_create(int pixWidth, int pixHeight, int repeats, double x1, double y1, double x2, double y2);
 
 Mandelbrot brot_zoom(Mandelbrot brot, double x1, double y1, double x2, double y2);
+
+Mandelbrot brot_reset_zoom(Mandelbrot brot);
 
 Mandelbrot brot_calculate(Mandelbrot brot);
 
