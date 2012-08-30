@@ -17,14 +17,14 @@ Mandelbrot brot_create(int pixelWidth, int pixelHeight, int repeats, double x1, 
     brot->pixelWidth = pixelWidth;
     brot->pixelHeight = pixelHeight;
 
-    brot->pixels = (int**) malloc(sizeof(int*) * brot->pixelWidth);
+    brot->canvas = (int**) malloc(sizeof(int*) * brot->pixelWidth);
 
     brot->repeats = repeats;
 
     // Assign the memory for the 2D array
     // Actually done as an array of pointers to arrays of ints
     for (int i = 0; i < brot->pixelWidth; i++) {
-        brot->pixels[i] = (int*) malloc(sizeof(int*) * brot->pixelHeight);
+        brot->canvas[i] = (int*) malloc(sizeof(int*) * brot->pixelHeight);
     }
 
     return brot;
@@ -63,7 +63,7 @@ Mandelbrot brot_calculate(Mandelbrot brot)
 {
     for (int xPos = 0; xPos < brot->pixelWidth; xPos++) {
         for (int yPos = 0; yPos < brot->pixelHeight; yPos++) {
-            brot->pixels[xPos][yPos] = brot_pixel_coords(brot, xPos, yPos);
+            brot->canvas[xPos][yPos] = brot_pixel_coords(brot, xPos, yPos);
         }
     }
 
@@ -149,10 +149,10 @@ uint32_t calc_colour(int value)
 void brot_cleanup(Mandelbrot brot)
 {
     for (int i = 0; i < brot->pixelWidth; i++) {
-        free(brot->pixels[i]);
+        free(brot->canvas[i]);
     }
 
-    free(brot->pixels);
+    free(brot->canvas);
 
     free(brot);
 }

@@ -23,7 +23,7 @@ typedef struct mandelbrot_fractal {
     // A 2D array of the pixels in the canvas
     // Will store the values detailing how many
     // iterations the calculation took to escape
-    int **pixels;
+    int **canvas;
 
     // Maximum number of iterations we'll go through
     // to see if the pixel escapes the bounds

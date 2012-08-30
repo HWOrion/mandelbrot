@@ -38,7 +38,7 @@ void draw_screen(Mandelbrot brot, SDL_Surface* screen)
     for (int y = 0; y < screen->h; y++) {
         yPos = (y * screen->pitch) / BPP;
         for (int x = 0; x < screen->w; x++) {
-            setpixel(screen, x, yPos, brot->pixels[x][y]);
+            setpixel(screen, x, yPos, brot->canvas[x][y]);
         }
     }
 
@@ -62,7 +62,7 @@ void render_png(Mandelbrot brot)
 
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
-            colour = brot->pixels[x][y];
+            colour = brot->canvas[x][y];
             image[4 * width * y + 4 * x + 0] = (colour >> 16) & 255;
             image[4 * width * y + 4 * x + 1] = (colour >> 8)  & 255;
             image[4 * width * y + 4 * x + 2] = (colour)       & 255;
