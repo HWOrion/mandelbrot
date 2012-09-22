@@ -55,6 +55,8 @@ Mandelbrot brot_reset_zoom(Mandelbrot brot);
 
 Mandelbrot brot_smooth_calculate(Mandelbrot brot);
 
+double brot_scale_value(double value, double high, double low);
+
 double brot_calc_smooth_value(Mandelbrot brot, int xPos, int yPos);
 
 uint32_t colour_from_hue(double value);

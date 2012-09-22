@@ -109,12 +109,10 @@ Mandelbrot brot_smooth_calculate(Mandelbrot brot)
     // scaling from 0 to 360
     for (int xPos = 0; xPos < brot->pixelWidth; xPos++) {
         for (int yPos = 0; yPos < brot->pixelHeight; yPos++) {
-            brot->smooth_values[xPos][yPos] = 360.0 * (brot->smooth_values[xPos][yPos] / highest);
+            brot->smooth_values[xPos][yPos] = 360.0 * brot_scale_value(brot->smooth_values[xPos][yPos], highest, lowest);
         }
     }
 
-    printf("highest:   %f\n", highest);
-    printf("lowest:    %f\n\n", lowest);
     // calculate colours
     for (int xPos = 0; xPos < brot->pixelWidth; xPos++) {
         for (int yPos = 0; yPos < brot->pixelHeight; yPos++) {
@@ -124,6 +122,11 @@ Mandelbrot brot_smooth_calculate(Mandelbrot brot)
 
 
     return brot;
+}
+
+double brot_scale_value(double value, double high, double low)
+{
+    return ( (value - low) / (high - low) );
 }
 
 double brot_calc_smooth_value(Mandelbrot brot, int xPos, int yPos)
