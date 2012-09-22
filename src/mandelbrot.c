@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <stdint.h>
@@ -23,14 +24,21 @@ Mandelbrot brot_create(int pixelWidth, int pixelHeight, int repeats, double x1, 
     brot->pixelWidth = pixelWidth;
     brot->pixelHeight = pixelHeight;
 
-    brot->canvas = (int**) malloc(sizeof(int*) * brot->pixelWidth);
+    brot->canvas = (uint32_t**) malloc(sizeof(uint32_t*) * brot->pixelWidth);
+
+    brot->smooth_values = (double**) malloc(sizeof(double*) * brot->pixelWidth);
 
     brot->repeats = repeats;
 
-    // Assign the memory for the 2D array
+    // Assign the memory for the canvas
     // Actually done as an array of pointers to arrays of ints
     for (int i = 0; i < brot->pixelWidth; i++) {
-        brot->canvas[i] = (int*) malloc(sizeof(int*) * brot->pixelHeight);
+        brot->canvas[i] = (uint32_t*) malloc(sizeof(uint32_t*) * brot->pixelHeight);
+    }
+
+    // Assign the memory for the smooth value array
+    for (int i = 0; i < brot->pixelWidth; i++) {
+        brot->smooth_values[i] = (double*) malloc(sizeof(double*) * brot->pixelHeight);
     }
 
     return brot;
@@ -60,7 +68,7 @@ Mandelbrot brot_zoom(Mandelbrot brot, double x1, double y1, double x2, double y2
     brot->x2 = x2Brot;
     brot->y2 = y2Brot;
 
-    brot_calculate(brot);
+    brot_smooth_calculate(brot);
 
     return brot;
 }
@@ -73,23 +81,52 @@ Mandelbrot brot_reset_zoom(Mandelbrot brot)
     brot->x2 = brot->startX2;
     brot->y2 = brot->startY2;
 
-    brot_calculate(brot);
+    brot_smooth_calculate(brot);
 
     return brot;
 }
 
-Mandelbrot brot_calculate(Mandelbrot brot)
+Mandelbrot brot_smooth_calculate(Mandelbrot brot)
 {
+    double highest = 0.0;
+    double lowest = 1000;
+    double value;
+
+    // Calculate mandelbrot values
     for (int xPos = 0; xPos < brot->pixelWidth; xPos++) {
         for (int yPos = 0; yPos < brot->pixelHeight; yPos++) {
-            brot->canvas[xPos][yPos] = brot_pixel_coords(brot, xPos, yPos);
+            value = brot_calc_smooth_value(brot, xPos, yPos);
+            if (value > highest) {
+                highest = value;
+            }
+            if (value > 0 && value < lowest) {
+                lowest = value;
+            }
+            brot->smooth_values[xPos][yPos] = value;
         }
     }
 
+    // scaling from 0 to 360
+    for (int xPos = 0; xPos < brot->pixelWidth; xPos++) {
+        for (int yPos = 0; yPos < brot->pixelHeight; yPos++) {
+            brot->smooth_values[xPos][yPos] = 360.0 * (brot->smooth_values[xPos][yPos] / highest);
+        }
+    }
+
+    printf("highest:   %f\n", highest);
+    printf("lowest:    %f\n\n", lowest);
+    // calculate colours
+    for (int xPos = 0; xPos < brot->pixelWidth; xPos++) {
+        for (int yPos = 0; yPos < brot->pixelHeight; yPos++) {
+            brot->canvas[xPos][yPos] = colour_from_hue(brot->smooth_values[xPos][yPos]);
+        }
+    }
+
+
     return brot;
 }
 
-int brot_pixel_coords(Mandelbrot brot, int xPos, int yPos)
+double brot_calc_smooth_value(Mandelbrot brot, int xPos, int yPos)
 {
     double xCoord = (double)brot->x1 + ((brot->x2 - brot->x1) * ((double)xPos / brot->pixelWidth));
 
@@ -116,46 +153,61 @@ int brot_pixel_coords(Mandelbrot brot, int xPos, int yPos)
         iteration++;
     }
 
-    return calc_colour(iteration);
+    if (iteration == brot->repeats) {
+        return -1.0;
+    } else {
+        return (double)iteration + 1.0 - (log( log( sqrt(x*x + y*y) ) ) / log(2));
+    }
 }
 
 
-uint32_t calc_colour(int value)
+uint32_t colour_from_hue(double value)
 {
+    if (value < 0) {
+        return 0;
+    }
+
     uint32_t colour;
 
-    if (value < 1) {
-        colour = 0 | (255 << 16) | (255 << 8) | 255;
-    } else if (value > 200) {
-        colour = 0;
-    } else {
-        switch(value % 8) {
-            case 0:
-                colour = (0 << 16) | (0 << 8) | 100;
-                break;
-            case 1:
-                colour = (0 << 16) | (0 << 8) | 150;
-                break;
-            case 2:
-                colour = (0 << 16) | (0 << 8) | 200;
-                break;
-            case 3:
-                colour = (50 << 16) | (50 << 8) | 250;
-                break;
-            case 4:
-                colour = (100 << 16) | (100 << 8) | 250;
-                break;
-            case 5:
-                colour = (150 << 16) | (150 << 8) | 250;
-                break;
-            case 6:
-                colour = (200 << 16) | (200 << 8) | 250;
-                break;
-            case 7:
-                colour = (250 << 16) | (250 << 8) | 250;
-                break;
-        }
+    double hue = fmod(value, 360.0);
+
+    double sat = 0.5;
+    double val = 0.5;
+
+    int h = hue / 60;
+
+    double f = (double)hue/60-h;
+    double p = val*(1.0-sat);
+    double q = val*(1.0-sat*f);
+    double t = val*(1.0-sat*(1-f));
+    double v = val;
+
+    int r,g,b;
+
+    switch(h) {
+        default:
+        case 0:
+        case 6:
+            r = (int)(v*255); g = (int)(t*255); b = (int)(p*255);
+            break;
+        case 1:
+            r = (int)(q*255); g = (int)(v*255); b = (int)(p*255);
+            break;
+        case 2:
+            r = (int)(p*255); g = (int)(v*255); b = (int)(t*255);
+            break;
+        case 3:
+            r = (int)(p*255); g = (int)(q*255); b = (int)(v*255);
+            break;
+        case 4:
+            r = (int)(t*255); g = (int)(p*255); b = (int)(v*255);
+            break;
+        case 5:
+            r = (int)(v*255); g = (int)(p*255); b = (int)(q*255);
+            break;
     }
+
+    colour = (r << 16) | (g << 8)   | b;
 
     return colour;
 }

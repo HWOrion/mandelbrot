@@ -29,10 +29,16 @@ typedef struct mandelbrot_fractal {
     int pixelWidth;
     int pixelHeight;
 
-    // A 2D array of the pixels in the canvas
+    // A 2D array of the pixels in the image
+    uint32_t **canvas;
+
+    // A 2D array of the raw escape values for the Mandelbrot set
     // Will store the values detailing how many
     // iterations the calculation took to escape
-    int **canvas;
+    int **raw_values;
+
+    // A 2D array of the smoothed Mandelbrot values
+    double **smooth_values;
 
     // Maximum number of iterations we'll go through
     // to see if the pixel escapes the bounds
@@ -47,11 +53,11 @@ Mandelbrot brot_zoom(Mandelbrot brot, double x1, double y1, double x2, double y2
 
 Mandelbrot brot_reset_zoom(Mandelbrot brot);
 
-Mandelbrot brot_calculate(Mandelbrot brot);
+Mandelbrot brot_smooth_calculate(Mandelbrot brot);
 
-int brot_pixel_coords(Mandelbrot brot, int xPos, int yPos);
+double brot_calc_smooth_value(Mandelbrot brot, int xPos, int yPos);
 
-uint32_t calc_colour(int value);
+uint32_t colour_from_hue(double value);
 
 // Cleanup the Mandelbrot data struct and free all the assigned memory
 void brot_cleanup(Mandelbrot brot);
