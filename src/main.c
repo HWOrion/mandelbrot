@@ -1,14 +1,60 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 #include <SDL/SDL.h>
 
+#include "main.h"
 #include "mandelbrot.h"
 #include "lodepng.h"
 
-#define WIDTH  2560
-#define HEIGHT 1440
 #define BPP    4
 #define DEPTH  32
 
+
+void usage(int exitval) {
+    printf("Mandelbrot usage:\n");
+    printf("mandelbrot width height outputfile\n");
+    exit(exitval);
+}
+
+Args parse_args(int argc, char *argv[]) {
+
+    Args args = {0, 0, ""};
+
+    int c;
+    while ( (c = getopt(argc, argv, "")) != -1) {
+        switch (c)
+        {
+            default:
+                usage(0);
+                break;
+        }
+    }
+
+
+    args.width       = atoi(argv[1]);
+    args.height      = atoi(argv[2]);
+    args.output_file =  argv[3];
+
+    if (*args.output_file == '\0') {
+        printf("Need to specify an output file\n");
+        usage(1);
+    } else {
+        printf("Writing images to %s\n", args.output_file);
+    }
+
+    if (args.width < 1) {
+        printf("Need to specify a width\n");
+        usage(1);
+    }
+
+    if (args.height < 1) {
+        printf("Need to specify a height\n");
+        usage(1);
+    }
+
+    return args;
+}
 
 void setpixel(SDL_Surface *screen, int x, int y, Uint32 colour)
 {
@@ -49,7 +95,7 @@ void draw_screen(Mandelbrot brot, SDL_Surface* screen)
     SDL_Flip(screen);
 }
 
-void render_png(Mandelbrot brot)
+void render_png(Mandelbrot brot, char* output_file)
 {
     int width  = brot->pixelWidth;
     int height = brot->pixelHeight;
@@ -70,7 +116,7 @@ void render_png(Mandelbrot brot)
         }
     }
 
-    err = lodepng_encode32_file("brotout.png", image, width, height);
+    err = lodepng_encode32_file(output_file, image, width, height);
 
     if (err) {
         printf("error %u: %s\n", err, lodepng_error_text(err));
@@ -80,6 +126,9 @@ void render_png(Mandelbrot brot)
 
 int main(int argc, char* argv[])
 {
+
+    Args args = parse_args(argc, argv);
+
     SDL_Surface *screen;
     SDL_Event event;
 
@@ -91,12 +140,12 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    if (!(screen = SDL_SetVideoMode(WIDTH, HEIGHT, DEPTH, SDL_FULLSCREEN|SDL_HWSURFACE))) {
+    if (!(screen = SDL_SetVideoMode(args.width, args.height, DEPTH, SDL_FULLSCREEN|SDL_HWSURFACE))) {
         SDL_Quit();
         return 1;
     }
 
-    Mandelbrot brot = brot_create(WIDTH, HEIGHT, 255, -2.5, -1.0, 1.0, 1.0);
+    Mandelbrot brot = brot_create(args.width, args.height, 255, -2.5, -1.0, 1.0, 1.0);
 
     brot_smooth_calculate(brot);
 
@@ -119,7 +168,7 @@ int main(int argc, char* argv[])
                     break;
                 case SDLK_p:
                     // Write out png
-                    render_png(brot);
+                    render_png(brot, args.output_file);
                     break;
                 case SDLK_r:
                     // Reset image
@@ -132,12 +181,12 @@ int main(int argc, char* argv[])
                 break;
 
             case SDL_MOUSEBUTTONDOWN:
-                x1 = (double)event.button.x/WIDTH;
-                y1 = (double)event.button.y/HEIGHT;
+                x1 = (double)event.button.x/args.width;
+                y1 = (double)event.button.y/args.height;
                 break; 
             case SDL_MOUSEBUTTONUP:
-                x2 = (double)event.button.x/WIDTH;
-                y2 = (double)event.button.y/HEIGHT;
+                x2 = (double)event.button.x/args.width;
+                y2 = (double)event.button.y/args.height;
 
                 if (x1 > x2) {
                     temp = x2;
