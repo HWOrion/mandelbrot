@@ -32,25 +32,13 @@ Args parse_args(int argc, char *argv[]) {
     }
 
 
-    args.width       = atoi(argv[1]);
-    args.height      = atoi(argv[2]);
-    args.output_file =  argv[3];
+    args.output_file =  argv[1];
 
     if (*args.output_file == '\0') {
         printf("Need to specify an output file\n");
         usage(1);
     } else {
         printf("Writing images to %s\n", args.output_file);
-    }
-
-    if (args.width < 1) {
-        printf("Need to specify a width\n");
-        usage(1);
-    }
-
-    if (args.height < 1) {
-        printf("Need to specify a height\n");
-        usage(1);
     }
 
     return args;
@@ -140,12 +128,14 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    if (!(screen = SDL_SetVideoMode(args.width, args.height, DEPTH, SDL_FULLSCREEN|SDL_HWSURFACE))) {
+    if (!(screen = SDL_SetVideoMode(0, 0, DEPTH, SDL_FULLSCREEN|SDL_HWSURFACE))) {
         SDL_Quit();
         return 1;
     }
 
-    Mandelbrot brot = brot_create(args.width, args.height, 255, -2.5, -1.0, 1.0, 1.0);
+    const SDL_VideoInfo* vidInfo = SDL_GetVideoInfo();
+
+    Mandelbrot brot = brot_create(vidInfo->current_w, vidInfo->current_h, 255, -2.5, -1.0, 1.0, 1.0);
 
     brot_smooth_calculate(brot);
 
@@ -181,12 +171,12 @@ int main(int argc, char* argv[])
                 break;
 
             case SDL_MOUSEBUTTONDOWN:
-                x1 = (double)event.button.x/args.width;
-                y1 = (double)event.button.y/args.height;
+                x1 = (double)event.button.x/vidInfo->current_w;
+                y1 = (double)event.button.y/vidInfo->current_h;
                 break; 
             case SDL_MOUSEBUTTONUP:
-                x2 = (double)event.button.x/args.width;
-                y2 = (double)event.button.y/args.height;
+                x2 = (double)event.button.x/vidInfo->current_w;
+                y2 = (double)event.button.y/vidInfo->current_h;
 
                 if (x1 > x2) {
                     temp = x2;
